@@ -87,12 +87,22 @@ DESCRIPTION
             main(EXAMPLE_3)
     if '--submission' in argv:
         HOMEWORK_VALUES = [
-            np.array([1, 1, 1, 0, 0, 0]),
-            np.array([1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0]),
-            np.array([1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0]),
+            np.array([0, 1, 1, 1, 0, 0, 0]), # 1
+            np.array([0, 1, 1, 1, 1, 1, 1, 0]), # 2
+            np.array([0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1]), # 3
+            np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]), # 4
+            np.array([0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0]), # 5
+            np.array([0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1]), # 6
+            np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]), # 7
+            np.array([0, 0, 1, 1, 1, 0, 0, 0, 1, 0]), # 8
+            np.array([0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0]), # 9
+            np.array([0, 1, 1, 0, 0, 1, 1, 0, 0]), # 10
         ]
+        num = 1
         for _ in HOMEWORK_VALUES:
+            print('Problem #{}: '.format(num))
             main(_)
+            num = num + 1
     else:
         # EDIT LINE BELOW TO TEST NEW ARRAY
         IS_BAD_SIDE = []
