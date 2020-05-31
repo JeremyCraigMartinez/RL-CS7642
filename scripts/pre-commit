@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+find . -name '*.py' -not -path '**/.venv/*' -not -path '**/examples/*' -exec pylint --rcfile /Users/jeremymartinez/georgia-tech/RL-CS7642/source-control/.pylintrc {} +;
+

@@ -1,9 +1,10 @@
 '''CS 7642 - HW1 Solution'''
 
 from sys import argv
-import mdptoolbox.example
 import numpy as np
+import mdptoolbox.example
 
+# pylint: disable=too-many-locals
 def main(is_bad_side):
     '''Main function for solution'''
     run = 3
@@ -13,6 +14,7 @@ def main(is_bad_side):
     dollar = np.arange(1, length + 1) * is_good_side
     prob = np.zeros((2, num_states, num_states))
     np.fill_diagonal(prob[0], 1)
+    # pylint: disable=invalid-name
     p = 1.0 / length
     zero = np.array([0]).repeat((run - 1) * length + 2)
 
@@ -89,6 +91,7 @@ DESCRIPTION
         HOMEWORK_VALUES = [
             np.array([0, 1, 1, 1, 0, 0, 0]), # 1
             np.array([0, 1, 1, 1, 1, 1, 1, 0]), # 2
+            # pylint: disable=line-too-long
             np.array([0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1]), # 3
             np.array([0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1]), # 4
             np.array([0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0]), # 5
@@ -98,11 +101,11 @@ DESCRIPTION
             np.array([0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0]), # 9
             np.array([0, 1, 1, 0, 0, 1, 1, 0, 0]), # 10
         ]
-        num = 1
+        NUM = 1
         for _ in HOMEWORK_VALUES:
-            print('Problem #{}: '.format(num))
+            print('Problem #{}: '.format(NUM))
             main(_)
-            num = num + 1
+            NUM = NUM + 1
     else:
         # EDIT LINE BELOW TO TEST NEW ARRAY
         IS_BAD_SIDE = []
