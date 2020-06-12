@@ -1,0 +1,8 @@
+[{
+    "amap": "",
+    "gamma": 0.91,
+    "alpha": 0.21,
+    "epsilon": 0.1,
+    "num_episodes": 33445,
+    "seed": 93827
+}]
