@@ -1,48 +1,59 @@
 '''Unit tests for Agent in frozen_lake'''
 
 import unittest
-from frozen_lake import Agent
+import numpy as np
+from frozen_lake import sarsa
+import util
 
 class TestMethods(unittest.TestCase):
     '''Unit tests for HW2 solution'''
     def test_practice_input_1(self):
         '''test_practice_input_1'''
-        agent = Agent(
-            amap='SFFG',
-            gamma=1.0,
-            alpha=0.24,
-            epsilon=0.09,
-            num_episodes=49553,
-            seed=202404,
+        result = sarsa(
+            'SFFG',
+            1.0,
+            0.24,
+            0.09,
+            49553,
+            202404,
         )
-        path = agent.train()
-        self.assertEqual(path, '<<v<')
+        answer = '<<v<'
+        mapped_answer = util.square(answer)
+        util.logger('Answer policy:', level='high')
+        util.logger(np.array([mapped_answer]).T, level='high')
+        self.assertEqual(result, answer)
 
     def test_practice_input_2(self):
         '''test_practice_input_2'''
-        agent = Agent(
-            amap='SFFFHFFFFFFFFFFG',
-            gamma=1.0,
-            alpha=0.25,
-            epsilon=0.29,
-            num_episodes=14697,
-            seed=741684,
+        result = sarsa(
+            'SFFFHFFFFFFFFFFG',
+            1.0,
+            0.25,
+            0.29,
+            14697,
+            741684,
         )
-        path = agent.train()
-        self.assertEqual(path, '^vv><>>vvv>v>>><')
+        answer = '^vv><>>vvv>v>>><'
+        mapped_answer = util.square(answer)
+        util.logger('Answer policy:', level='high')
+        util.logger(np.array([mapped_answer]).T, level='high')
+        self.assertEqual(result, answer)
 
     def test_practice_input_3(self):
         '''test_practice_input_3'''
-        agent = Agent(
-            amap='SFFFFHFFFFFFFFFFFFFFFFFFG',
-            gamma=0.91,
-            alpha=0.12,
-            epsilon=0.13,
-            num_episodes=42271,
-            seed=983459,
+        result = sarsa(
+            'SFFFFHFFFFFFFFFFFFFFFFFFG',
+            0.91,
+            0.12,
+            0.13,
+            42271,
+            983459,
         )
-        path = agent.train()
-        self.assertEqual(path, '^>>>><>>>vvv>>vv>>>>v>>^<')
+        answer = '^>>>><>>>vvv>>vv>>>>v>>^<'
+        mapped_answer = util.square(answer)
+        util.logger('Answer policy:', level='high')
+        util.logger(np.array([mapped_answer]).T, level='high')
+        self.assertEqual(result, answer)
 
 if __name__ == '__main__':
     unittest.main()

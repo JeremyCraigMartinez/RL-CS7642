@@ -1,8 +1,71 @@
 [{
-    "amap": "",
-    "gamma": 0.91,
-    "alpha": 0.21,
+    "amap": "SFFFHFFFFFFFFFFG",
+    "gamma": 0.97,
+    "alpha": 0.18,
+    "epsilon": 0.17,
+    "num_episodes": 5981,
+    "seed": 650559
+}, {
+    "amap": "SFFFHFFFFFFFFFFG",
+    "gamma": 0.94,
+    "alpha": 0.06,
+    "epsilon": 0.23,
+    "num_episodes": 20314,
+    "seed": 751139
+}, {
+    "amap": "SFFG",
+    "gamma": 0.94,
+    "alpha": 0.23,
+    "epsilon": 0.2,
+    "num_episodes": 45890,
+    "seed": 722060
+}, {
+    "amap": "SFFFFHFFFFFFFFFFFFFFFFFFG",
+    "gamma": 0.93,
+    "alpha": 0.23,
+    "epsilon": 0.28,
+    "num_episodes": 47626,
+    "seed": 763132
+}, {
+    "amap": "SFFG",
+    "gamma": 0.99,
+    "alpha": 0.1,
+    "epsilon": 0.22,
+    "num_episodes": 41692,
+    "seed": 106212
+}, {
+    "amap": "SFFG",
+    "gamma": 0.96,
+    "alpha": 0.22,
+    "epsilon": 0.12,
+    "num_episodes": 27939,
+    "seed": 197454
+}, {
+    "amap": "SFFG",
+    "gamma": 0.99,
+    "alpha": 0.15,
+    "epsilon": 0.24,
+    "num_episodes": 24757,
+    "seed": 13085
+}, {
+    "amap": "SFFFHFFFFFFFFFFG",
+    "gamma": 0.95,
+    "alpha": 0.26,
     "epsilon": 0.1,
-    "num_episodes": 33445,
-    "seed": 93827
+    "num_episodes": 30701,
+    "seed": 291669
+}, {
+    "amap": "SFFG",
+    "gamma": 0.98,
+    "alpha": 0.28,
+    "epsilon": 0.13,
+    "num_episodes": 6688,
+    "seed": 175571
+}, {
+    "amap": "SFFG",
+    "gamma": 0.95,
+    "alpha": 0.1,
+    "epsilon": 0.23,
+    "num_episodes": 18804,
+    "seed": 105338
 }]
