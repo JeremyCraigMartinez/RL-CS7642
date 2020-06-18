@@ -4,7 +4,7 @@ import math
 import unittest
 from taxi import Q
 
-EPSILON_ALPHA_VALUES = ((0.3, 0.2),)
+EPSILON_ALPHA_VALUES = ((1, 0.25),)
 Q_VALUES = {}
 
 class TestMethods(unittest.TestCase):

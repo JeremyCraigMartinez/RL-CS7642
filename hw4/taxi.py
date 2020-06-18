@@ -19,8 +19,9 @@ class Q():
         self.env = env
         self.gamma = 0.9
         self.epsilon = epsilon
+        self.epsilon_decay = 0.00008
         self.alpha = alpha
-        self.num_episodes = 250000
+        self.num_episodes = 30000
 
     def train(self):
         '''Q learning algorithm'''
@@ -42,6 +43,9 @@ class Q():
                 update = self.alpha * (reward + self.gamma * self.q_value[next_state, next_state_max_action] - self.q_value[state, action])
                 self.q_value[state, action] += update
                 state = next_state
+
+            if self.epsilon > 0.075:
+                self.epsilon = self.epsilon * (1 - self.epsilon_decay)
 
         self.env.close()
 
