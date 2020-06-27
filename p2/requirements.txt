@@ -1,0 +1,10 @@
+pylint==2.3.1
+numpy==1.18.0
+matplotlib==3.2.1
+pandas==1.0.4
+gym==0.17.2
+tensorflow==2.2.0
+scipy==1.4.1
+Box2D==2.3.10
+graphviz==0.14
+pydot==1.4.1
