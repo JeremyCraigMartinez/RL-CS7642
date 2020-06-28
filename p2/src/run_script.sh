@@ -12,5 +12,5 @@ source .venv/bin/activate
 pip install --quiet -r requirements.txt
 
 # run project 2 solution
-cd Project_2/src
-python solution.py
+cd p2/src
+time python lunar_lander.py -- --verbose

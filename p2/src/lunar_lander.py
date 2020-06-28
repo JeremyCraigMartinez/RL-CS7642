@@ -17,8 +17,9 @@ OPEN_AI_ENV = 'LunarLander-v2'
 # pylint: disable=too-many-instance-attributes
 class DQN:
     '''Deep Q-Networks'''
-    def __init__(self, gamma=0.99, epsilon_decay=0.005):
+    def __init__(self, gamma=0.99, epsilon_decay=0.003, hidden_layer_dim=64):
         seed = 983827
+        self.hidden_layer_dim = hidden_layer_dim
         self.env = gym.make(OPEN_AI_ENV)
         self.state_space = self.env.observation_space.shape[0]
         self.action_space = self.env.action_space.n
@@ -39,8 +40,9 @@ class DQN:
     def get_model(self):
         '''Get SGD model'''
         model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Dense(64, input_dim=self.state_space, activation='relu'))
-        model.add(tf.keras.layers.Dense(64, activation='relu'))
+        # pylint: disable=line-too-long
+        model.add(tf.keras.layers.Dense(self.hidden_layer_dim, input_dim=self.state_space, activation='relu'))
+        model.add(tf.keras.layers.Dense(self.hidden_layer_dim, activation='relu'))
         model.add(tf.keras.layers.Dense(self.action_space))
         # pylint: disable=line-too-long
         model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(lr=self.learning_rate))
@@ -79,7 +81,6 @@ class DQN:
         # update weights
         weights = self.action_value_function.get_weights()
         target_weights = self.target_action_value_function.get_weights()
-        import pdb; pdb.set_trace()
         for i, _ in enumerate(target_weights):
             target_weights[i] = self.alpha * weights[i] + (1 - self.alpha) * target_weights[i]
         self.target_action_value_function.set_weights(target_weights)
@@ -180,6 +181,7 @@ def main():
         train_scores, epsilons = train(agent, filename=filename)
         with open('agent-scores.json', 'w') as outfile:
             json.dump(train_scores, outfile)
+        # pylint: disable=line-too-long
         util.plot_two_separate([train_scores, epsilons], 'Episodes', ['Training Scores', 'Epsilon Values'], 'training')
         if '--train-only' in argv:
             return
@@ -188,19 +190,32 @@ def main():
     util.plot_values(test_scores, 'Episodes', 'Scores', 'testing')
 
 def test_gamma_hyperparameters():
+    '''Helper functions for running hyperparameter experiments'''
     index = argv.index('--gamma') + 1
     gamma = float(argv[index])
     agent = DQN(gamma=gamma)
-    train_scores, _ = train(agent, num_episodes=3)
+    train_scores, _ = train(agent, num_episodes=1000)
     with open('agent-train-hyperparameter-epsilon-decay-{}.json'.format(gamma), 'w') as outfile:
         json.dump(train_scores, outfile)
 
 def test_epsilon_decay_hyperparameters():
+    '''Helper functions for running hyperparameter experiments'''
     index = argv.index('--epsilon-decay') + 1
     epsilon_decay = float(argv[index])
     agent = DQN(epsilon_decay=epsilon_decay)
-    train_scores, _ = train(agent)
+    train_scores, _ = train(agent, num_episodes=1000)
+    # pylint: disable=line-too-long
     with open('agent-train-hyperparameter-epsilon-decay-{}.json'.format(epsilon_decay), 'w') as outfile:
+        json.dump(train_scores, outfile)
+
+def test_layers_hyperparameters():
+    '''Helper functions for running hyperparameter experiments'''
+    index = argv.index('--layers') + 1
+    hidden_layer_dim = float(argv[index])
+    agent = DQN(hidden_layer_dim=hidden_layer_dim)
+    train_scores, _ = train(agent, num_episodes=1000)
+    # pylint: disable=line-too-long
+    with open('agent-train-hyperparameter-hidden-layer-dim-{}.json'.format(hidden_layer_dim), 'w') as outfile:
         json.dump(train_scores, outfile)
 
 if __name__ == '__main__':

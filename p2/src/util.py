@@ -20,6 +20,7 @@ def plot_multiple(values, labels, xlabel, ylabel, filename):
     '''Plot figure'''
     for value, label in zip(values, labels):
         plt.plot(np.arange(len(value)), value, label=label)
+    plt.legend(labels)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.savefig(filename)
