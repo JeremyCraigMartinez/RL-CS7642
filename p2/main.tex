@@ -118,7 +118,7 @@ Where we have some ability to optimize performance comes with the number of hidd
 
 In algorithm \ref{alg:1} we see the full DQN algorithm, as implemented in project 2. This algorithm was implemented according to the DQN developed by DeepMind\textsuperscript{1}.
 
-This algorithm has parts that look and feel much like the Q-learning we implemented in HW4. However, Q-learning has a tendency to become unstable when a nonline function approximator (such as neural network) is used to represent the action-value function. DeepMind addressed this with two novel approaches, which we have recreated in our own DQN. The first is to reduce correlations present in a sequence of observations by accumlating state/action/reward pairs over N number of steps across M number of epochs (capped at some arbitrary value) and storing them in a \textit{replay memory}. Then, uniformally selecting a random subset from the \textit{replay memory}, we apply a Q-learning off-policy weight update. Second, to avoid a tendency in the target-action-value \hat{Q} function to diverge, we periodically reset it to another action-value function \textit{Q}.
+This algorithm has parts that look and feel much like the Q-learning we implemented in HW4. However, Q-learning has a tendency to become unstable when a nonline function approximator (such as neural network) is used to represent the action-value function. DeepMind addressed this with two novel approaches, which we have recreated in our own DQN. The first is to reduce correlations present in a sequence of observations by accumulating state/action/reward pairs over N number of steps across M number of epochs (capped at some arbitrary value) and storing them in a \textit{replay memory}. Then, uniformly selecting a random subset from the \textit{replay memory}, we apply a Q-learning off-policy weight update. Second, to avoid a tendency in the target-action-value \hat{Q} function to diverge, we periodically reset it to another action-value function \textit{Q}.
 
 \section{Lunar Lander}
 The Lunar Lander, developed by OpenAI Gym, is a RL environment in which the agent attempts to land a space craft on the moon. The state space includes 6 continuous variables, and two discrete: \textit{(x, y, x-velocity, y-velocity, angle, angle-velocity, left-leg, right-leg)}.
@@ -132,7 +132,7 @@ The action space consists of four discrete actions: do nothing, fire left orient
 \section{Training/Testing the Agent}
 The agent took 145 minutes to train. The agent ultimately passed the environment with an average score of 200 over 100 consecutive iterations. The agent converged to this in 1,431 episodes (as seen in figure \ref{fig:agent-training}). However, with different seeds, I did see this agent converge under 1,200 episodes as well. Ideally, with unlimited computer processing, I would like to run this across ~10 cores with 10 different seeds, average all of the processes scores, and then plot that as a representative of the DQN's performance. However, given this limitation, this plot will suffice.
 
-The agent tested very well (as seen in figure \ref{fig:agent-test}) with an average score of \textbf{207.105} and an average episode duration of \textbf{2.619 seconds}.
+The agent tested very well (as seen in figure \ref{fig:agent-test}) with an average score of \textbf{207.105} and an average episode duration of \textbf{2.619 seconds}. The default parameters used in training/testing can be seen in table \ref{table:1}
 
 \begin{figure}[]
     \centering
@@ -148,16 +148,46 @@ The agent tested very well (as seen in figure \ref{fig:agent-test}) with an aver
     \label{fig:agent-test}
 \end{figure}
 
+\begin{table}[]
+    \label{table:1}
+    \caption{List of parameters for Agent training/testing}
+    \hline
+    \begin{tabular}{ll}
+    $\gamma$ & 0.99 \\
+    $\alpha$ & 0.003 \\
+    update frequency & 4 \\
+    sample minibatch size & 64 \\
+    max step size & 500 \\
+    ANN hidden layer dimension & 64 \\
+    ANN learning rate & 0.0005 \\
+    Tensorflow optimizer & Adam \\
+    Loss function & Mean Squared Error \\
+    replay memory size & 1000000 \\
+    $\epsilon$-decay & 0.005 \\
+    $\epsilon$ & 1
+    \end{tabular}
+    \hline
+\end{table}
+
 \section{The Effect of Epsilon-Decay on Policy Convergence}
 Epsilon decay was the most promising looking hyperparameter among the three. I expected this to have such a strong influence over the learner because of it's influence in HW4. I was able to reduce the required number of episodes to train in HW4 to one fifth without $\epsilon$-decay at all. I only used three values in testing different $\epsilon$-decay values: \textit{0.003, 0.005, 0.007}. Figure \ref{fig:epsilon-decay} shows the value that epsilon takes over the course of 1,000 episodes. In the DQN, a minimum 0.01 was enforced for the epsilon value.
 
-This hyperparameter controls the exploration/exploitation of the agent in training. When selecting $\epsilon$-greedy actions, the lower $\epsilon$-decay values will encourage exploration for longer. This is important, and proved to be most optimal among the three (as seen in figure \ref{unavailable}). The reason higher values for $\epsilon$-decay yield slow convergence rates is because the agent begins to take $\epsilon$-greedy actions too often without exploring enough of the state space. Whereas, on the contrary, lower $\epsilon$-decay values yield a higher $\epsilon$ in later episodes encouraging the agent to learn more about the state space. This knowledge in turn allows them to select more optimal greedy actions when the $\epsilon$ eventually reaches the minimum.
+This hyperparameter controls the exploration/exploitation of the agent in training. When selecting $\epsilon$-greedy actions, the lower $\epsilon$-decay values will encourage exploration for longer. This is important, and proved to be most optimal among the three (as seen in figure \ref{fig:hyperparameter-test-epsilon-decay}). The reason higher values for $\epsilon$-decay yield slow convergence rates is because the agent begins to take $\epsilon$-greedy actions too often without exploring enough of the state space. Whereas, on the contrary, lower $\epsilon$-decay values yield a higher $\epsilon$ in later episodes encouraging the agent to learn more about the state space. This knowledge in turn allows them to select more optimal greedy actions when the $\epsilon$ eventually reaches the minimum.
+
+The $\epsilon$ value reaches the minimum of 0.01 for the three $\epsilon$-decay values represented in figure \ref{fig:hyperparameter-test-epsilon-decay} after \textit{655 episodes} for a decay of 0.007, \textit{918 episodes} for 0.005 and \textit{1,532 episodes} for 0.003. It is also worth noting that the $\epsilon$-decay of 0.003 solved the Lunar Lander problem in 972 episodes and an $\epsilon$-decay value of 0.007 solved it in a record speed of 908 episodes in hyperparameter testing.
 
 \begin{figure}[]
     \centering
     \includegraphics[scale=0.45]{figs/epsilon-decay}
     \caption{Rate at which epislon decays over three values for $\epsilon$}
     \label{fig:epsilon-decay}
+\end{figure}
+
+\begin{figure}[]
+    \centering
+    \includegraphics[scale=0.45]{figs/hyperparameter-test-epsilon-decay}
+    \caption{Agent training convergence with tuning $\epsilon$-decay as a hyperparameter }
+    \label{fig:hyperparameter-test-epsilon-decay}
 \end{figure}
 
 \section{The Effect of Gamma on Policy Convergence}
@@ -174,13 +204,21 @@ Manipulating this hyperparameter forced me to contemplate it's influence on the 
 \begin{figure}[]
     \centering
     \includegraphics[scale=0.45]{figs/hyperparameter-test-gamma}
-    \caption{Agent training convergence with tuning gamma as a hyperparameter $\epsilon$}
+    \caption{Agent training convergence with tuning gamma as a hyperparameter}
     \label{fig:hyperparameter-test-gamma}
 \end{figure}
 
-
 \section{The Effect of CNN Hidden Layer Size on Policy Convergence}
-Graphs
+The hidden layer of the neural network seemed to have performed similarly with a dimension of 16, 32, and 64 (as seen in figure \ref{fig:hyperparameter-test-hidden-layer-dim}). The average of the final 100 episodes across the three values are \textit{47.118, 80.968, 44.411} with a stand deviation of \textit{26.094, 45.081, 71.899}, respectively. This suggests that at 1,000 episodes of training, an ANN with two hidden layers of 32 dimensions yields, on average, the highest convergence. However, it also suggests that a lower dimensionality yields a more stable/steady trend toward convergence. It would be my theory that, given the stability of a 16 dimension hidden layer, this could surpass 32 if extended over 1,500 - 2,000 episodes.
+
+A high dimensionality is known to help avoid overfitting in non-linear function approximation, and so it would be pertinent to bear this in mind when evaluating the trade-offs of a lower dimensionality’s stability/training performance score to a higher dimensionality’s slightly lower training score. In order to compare their tendency to overfit, a similar comparison should be evaluated with the agent's tests scores. We are omitting this here due to computation and time constraints.
+
+\begin{figure}[]
+    \centering
+    \includegraphics[scale=0.45]{figs/hyperparameter-test-hidden-layer-dim}
+    \caption{Agent training convergence with tuning dimension of hidden layer dimension in ANN as a hyperparameter}
+    \label{fig:hyperparameter-test-hidden-layer-dim}
+\end{figure}
 
 \section{Pitfalls \& Problems}
 I encountered constraints in terms of computation power/speed. To train the agent took several hours. A couple times, I had to run nightly builds, and then check the results the next morning. This posed a challenge since I was not able to receive immediate feedback on optimizations I would make to the codebase. I was unable to fully vectorize my codebase, too. There still exists two for loops that could potentially be vectorized using numpy, which would have a dramatic increase in performance. The two for loops exist in the sample minibatch computation in regard to the Q-learning step with the target-action-value function and the weight update.
@@ -190,9 +228,13 @@ I tested this algorithm, in the early stages of development, against the CartPol
 \section{Further Research}
 Given more time, I would look into parallelizing this code more efficiently. Once this code is parallelized efficiently, I would select more hyperparameters and test all permutations of these against one another. I am particularly interested in how tuning parameters related to the ANN affect the agents overall ability to converge, and the speed at which the agent converges.
 
+One final note, as I wrap up my hyperparameter testing. I am noticing some inconsistent performance across different iterations of agent training. I am reusing the same seed for numpy and the gym env on every iteration. So this variability seems to suggest that CPU availability or processing power may play a factor in getting the agent to converge. In order to quiet down standard deviation between consecutive invocations, I would like to run all of these experiments multiple times (using something like GNU parallel) and average the results across all.
+
 \begin{thebibliography}{00}
 \bibitem{b1} Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A. Rusu, Joel Veness, Marc G. Bellemare, et al. (2015). Human-level control through deep reinforcement learning. Nature, p529-533. doi: 10.1038/nature14236
 \bibitem{b2} https://gym.openai.com/envs/LunarLander-v2/
+\bibitem{b3} Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction. MIT press.
+\bibitem{b3} Hado Van Hasselt, et al. Deep Reinforcement Learning and the Deadly Triad. 2018.
 \end{thebibliography}
 
 \end{document}
