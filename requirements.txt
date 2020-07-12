@@ -4,4 +4,5 @@ sympy==1.4
 pymdptoolbox==4.0b3
 scipy==1.4.1
 gym==0.17.2
-
+cvxopt==1.2.5
+matplotlib==3.2.2
