@@ -1,9 +1,15 @@
 '''Reused utility classes/functions for Project 3'''
 
+from sys import argv
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.rcParams['agg.path.chunksize'] = 10000000
+
+def logger(_str, level='low'):
+    '''logger enabled with --verbose flag'''
+    if '--verbose' in argv or level == 'high':
+        print(_str)
 
 def plot_fig(errors, title):
     '''Plot convergence'''
@@ -13,8 +19,56 @@ def plot_fig(errors, title):
     plt.xlabel('Simulation Iteartion')
     plt.ylabel('Q-value Difference')
     plt.ylim(0., .5)
+    plt.ticklabel_format(style='sci', axis='x', scilimits=(0, 0), useMathText=True)
 
-    plt.show()
+    fig = plt.gcf()
+    plt.draw()
+    fig.savefig('figs/{}.png'.format(title), dpi=fig.dpi)
+
+def translate_state(state):
+    '''translate state for Q values'''
+    A, B, _possession = state
+    A_row, A_col = A
+    B_row, B_col = B
+    A_position = A_row * 4 + A_col
+    B_position = B_row * 4 + B_col
+    possession = 1 if _possession == 'B' else 0
+    return A_position, B_position, possession
+
+def translate_rewards(rewards):
+    '''translate rewards from obj to array'''
+    return [rewards['A'], rewards['B']]
+
+def map_action(action):
+    '''Get human readable action from number'''
+    if action == 0:
+        return 'up'
+    if action == 1:
+        return 'right'
+    if action == 2:
+        return 'down'
+    if action == 3:
+        return 'left'
+    return 'nada'
+
+def apply_action_to_player(player_position, action):
+    '''The physics of the world, pertaining to the action'''
+    action_diff = (
+        np.array([-1, 0]), # Up
+        np.array([0, 1]),  # Right
+        np.array([1, 0]),  # Down
+        np.array([0, -1]), # Left
+        np.array([0, 0]),  # Nothing
+    )
+
+    # pylint: disable=too-many-boolean-expressions
+    if (player_position[0] == 0 and action == 0) or \
+        (player_position[1] == 0 and action == 3) or \
+        (player_position[0] == 1 and action == 2) or \
+        (player_position[1] == 3 and action == 1):
+        return player_position
+
+    return player_position + action_diff[action]
 
 class SoccerEnv:
     '''Soccer environment to run learner on'''
@@ -37,13 +91,6 @@ class SoccerEnv:
         if self.done:
             raise Exception('Environment has terminated')
 
-        action_diff = (
-            np.array([-1, 0]), # Up
-            np.array([0, 1]),  # Right
-            np.array([1, 0]),  # Down
-            np.array([0, -1]), # Left
-            np.array([0, 0]),  # Nothing
-        )
         rewards = {'A': 0, 'B': 0}
         actions = {'A': action_a, 'B': action_b}
         first_player = 'A' if np.random.choice([0, 1], 1)[0] == 0 else 'B'
@@ -54,7 +101,7 @@ class SoccerEnv:
 
         # Player A moves first
         new_state = {}
-        new_state[first_player] = self.player_positions[first_player] + action_diff[actions[first_player]]
+        new_state[first_player] = apply_action_to_player(self.player_positions[first_player], actions[first_player])
 
         # If they collide, only the first play moves
         if (new_state[first_player] == self.player_positions[second_player]).all():
@@ -63,7 +110,7 @@ class SoccerEnv:
                 self.possession = first_player
             self.player_positions[first_player] = new_state[first_player]
             return self.get_state(), rewards, self.done
-        new_state[second_player] = self.player_positions[second_player] + action_diff[actions[second_player]]
+        new_state[second_player] = apply_action_to_player(self.player_positions[second_player], actions[second_player])
 
         # Update positions for players in env
         self.player_positions[first_player] = new_state[first_player]
