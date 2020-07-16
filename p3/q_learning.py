@@ -1,5 +1,7 @@
 '''Q-learning'''
 
+from sys import argv
+import pickle
 import numpy as np
 from util import SoccerEnv, logger, plot_fig, translate_rewards, translate_state, map_action
 
@@ -42,24 +44,24 @@ def q_learning(steps=1000000):
             next_state, _rewards, done = env.simulate_action(*actions)
             rewards = translate_rewards(_rewards)
             logger('State: {}; Actions: {};\t Next State: {}; Rewards: {};\t Terminal: {}'.format(state, [map_action(a) for a in actions], translate_state(next_state), rewards, done))
-
+            if '--render' in argv:
+                env.render(actions, done)
             a_pos, b_pos, ball_poss = state
             next_a_pos, next_b_pos, next_ball_poss = translate_state(next_state)
-            total_diff = 0
+            before = q_values[0][a_pos][b_pos][ball_poss][actions[0]]
             if done:
                 for i, _ in enumerate(q_values):
                     action = actions[i]
                     diff = alpha * (rewards[i] - q_values[i][a_pos][b_pos][ball_poss][action])
                     q_values[i][a_pos][b_pos][ball_poss][action] += diff
-                    total_diff += diff
             else:
                 for i, _ in enumerate(q_values):
                     action = actions[i]
                     diff = alpha * (rewards[i] + gamma * \
                         max(q_values[i][next_a_pos][next_b_pos][next_ball_poss]) - q_values[i][a_pos][b_pos][ball_poss][action])
                     q_values[i][a_pos][b_pos][ball_poss][action] += diff
-                    total_diff += diff
 
+            after = q_values[0][a_pos][b_pos][ball_poss][actions[0]]
             if epsilon > epsilon_min:
                 epsilon *= (1 - epsilon_decay)
             if alpha > alpha_min:
@@ -67,10 +69,16 @@ def q_learning(steps=1000000):
 
             state = translate_state(next_state)
 
-        q_value_diff.append(abs(total_diff))
+        q_value_diff.append(abs(after - before))
 
     return q_value_diff
 
 if __name__ == '__main__':
     np.random.seed(1827343)
-    plot_fig(q_learning(), 'Q-learner')
+    if '--plot-only' in argv:
+        list_of_error_diffs = pickle.load(open('bin/q-learner.p', 'rb'))
+        plot_fig(list_of_error_diffs, 'Q-learner')
+    else:
+        list_of_error_diffs = q_learning()
+        pickle.dump(list_of_error_diffs, open('bin/q-learner.p', 'wb'))
+        plot_fig(list_of_error_diffs, 'Q-learner')

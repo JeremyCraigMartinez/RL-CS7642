@@ -3,8 +3,7 @@
 from sys import argv
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-mpl.rcParams['agg.path.chunksize'] = 10000000
+plt.rcParams['agg.path.chunksize'] = 100000000000000000
 
 def logger(_str, level='low'):
     '''logger enabled with --verbose flag'''
@@ -130,3 +129,42 @@ class SoccerEnv:
             self.done = True
 
         return self.get_state(), rewards, self.done
+
+    def render(self, actions, done):
+        '''Render out environment in console'''
+        def get_cell_print_out(row, col):
+            # import pdb; pdb.set_trace()
+            is_A = (self.player_positions['A'] == np.array([row, col])).all()
+            is_B = (self.player_positions['B'] == np.array([row, col])).all()
+            if is_A and is_B:
+                if self.possession == 'A':
+                    return 'AB'
+                return 'BA'
+            if is_A:
+                if self.possession == 'A':
+                    return 'A*'
+                return 'A '
+            if is_B:
+                if self.possession == 'B':
+                    return 'B*'
+                return 'B '
+            return '  '
+
+        print('''Player A moved {}; Player B moved {}:
++-----------+
+|{}|{}|{}|{}|
++--+--+--+--+
+|{}|{}|{}|{}|
++-----------+
+{}'''.format(
+    map_action(actions[0]), map_action(actions[1]),
+    get_cell_print_out(0, 0),
+    get_cell_print_out(0, 1),
+    get_cell_print_out(0, 2),
+    get_cell_print_out(0, 3),
+    get_cell_print_out(1, 0),
+    get_cell_print_out(1, 1),
+    get_cell_print_out(1, 2),
+    get_cell_print_out(1, 3),
+    '' if not done else 'Game ends'
+))
