@@ -12,13 +12,14 @@ def logger(_str, level='low'):
 
 def plot_fig(errors, title):
     '''Plot convergence'''
-    plt.plot(errors, linestyle='-', linewidth=0.6)
+    plt.plot(errors, 'k', linestyle='-', linewidth=0.6)
 
     plt.title(title)
     plt.xlabel('Simulation Iteartion')
     plt.ylabel('Q-value Difference')
     plt.ylim(0., .5)
     plt.ticklabel_format(style='sci', axis='x', scilimits=(0, 0), useMathText=True)
+    plt.margins(x=0, y=0)
 
     fig = plt.gcf()
     plt.draw()

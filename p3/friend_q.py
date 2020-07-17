@@ -34,8 +34,11 @@ def friend_q(steps=1000000):
     ]
 
     for _ in range(steps):
-        if _ % 1000 == 0:
-            print('\rPercentage: {:.2f}%'.format(_ * 100 / steps), end='')
+        if _ > 0 and _ % 1000 == 0:
+            if _ % 10000 == 0:
+                print('\rStep {}\tEpsilon: {:.3f}\tLast error: {}\tError mean: {:.3f}\tPercentage: {:.2f}%\t Alpha: {:.3f}'.format(_, epsilon, q_value_diff[-1], np.mean(q_value_diff[:-100]), _ * 100 / steps, alpha))
+            else:
+                print('\rStep {}\tEpsilon: {:.3f}\tLast error: {}\tError mean: {:.3f}\tPercentage: {:.2f}%\t Alpha: {:.3f}'.format(_, epsilon, q_value_diff[-1], np.mean(q_value_diff[:-100]), _ * 100 / steps, alpha), end='')
         env = SoccerEnv()
         done = False
         while not done:
@@ -43,11 +46,10 @@ def friend_q(steps=1000000):
             actions = [select_epsilon_greedy_action(q_value, state, epsilon) for q_value in q_values]
             next_state, _rewards, done = env.simulate_action(*actions)
             rewards = translate_rewards(_rewards)
-            logger('State: {}; Actions: {};\t Next State: {}; Rewards: {};\t Terminal: {}'.format(state, [map_action(a) for a in actions], translate_state(next_state), rewards, done))
-
             a_pos, b_pos, ball_poss = state
             next_a_pos, next_b_pos, next_ball_poss = translate_state(next_state)
-            before = q_values[0][a_pos][b_pos][ball_poss][actions[0]][4]
+            before = q_values[0][2][1][1][3][4] # Per section 5 of Greenwald-Hall-2003
+
             if done:
                 # Player A
                 diff = alpha * (rewards[0] - q_values[0][a_pos][b_pos][ball_poss][actions[0]][actions[1]])
@@ -55,6 +57,7 @@ def friend_q(steps=1000000):
                 # Player B
                 diff = alpha * (rewards[1] - q_values[1][a_pos][b_pos][ball_poss][actions[1]][actions[0]])
                 q_values[1][a_pos][b_pos][ball_poss][actions[1]][actions[0]] += diff
+                break
             else:
                 # Player A
                 diff = alpha * (rewards[0] + gamma * \
@@ -64,18 +67,19 @@ def friend_q(steps=1000000):
                 diff = alpha * (rewards[1] + gamma * \
                     np.max(q_values[1][next_a_pos][next_b_pos][next_ball_poss]) - q_values[1][a_pos][b_pos][ball_poss][actions[1]][actions[0]])
                 q_values[1][a_pos][b_pos][ball_poss][actions[1]][actions[0]] += diff
-            after = q_values[0][a_pos][b_pos][ball_poss][actions[0]][4]
 
-            if epsilon > epsilon_min:
-                epsilon *= (1 - epsilon_decay)
-            if alpha > alpha_min:
-                alpha *= (1 - alpha_decay)
+                if epsilon > epsilon_min:
+                    epsilon *= (1 - epsilon_decay)
+                alpha = 1 / (_ / alpha_min / steps + 1)
+
+            after = q_values[0][2][1][1][3][4]
 
             state = translate_state(next_state)
+            q_value_diff.append(abs(after - before))
+            if q_value_diff[-1] > 0:
+                logger('Player positions: {}\t Error: {:.3f}\t State: {}; Actions: {};\t Next State: {}; Rewards: {};\t Terminal: {}'.format((a_pos, b_pos), q_value_diff[-1], state, [map_action(a) for a in actions], translate_state(next_state), rewards, done))
 
-        q_value_diff.append(abs(after - before))
-
-    return q_value_diff
+    return np.array(q_value_diff)[np.where(np.array(q_value_diff) > 0)]
 
 if __name__ == '__main__':
     np.random.seed(1827343)
