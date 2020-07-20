@@ -132,7 +132,6 @@ def uce_q(steps=1000000):
     return np.array(q_value_diff)[np.where(np.array(q_value_diff) > 0)]
 
 if __name__ == '__main__':
-    np.random.seed(1827343)
     if '--plot-only' in argv:
         list_of_error_diffs = pickle.load(open('bin/ce-q.p', 'rb'))
         plot_fig(list_of_error_diffs, 'Correlated-Q')

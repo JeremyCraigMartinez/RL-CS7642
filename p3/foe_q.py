@@ -108,7 +108,6 @@ def foe_q(steps=1000000):
     return q_value_diff
 
 if __name__ == '__main__':
-    np.random.seed(1827343)
     if '--plot-only' in argv:
         list_of_error_diffs = pickle.load(open('bin/foe-q.p', 'rb'))
         plot_fig(list_of_error_diffs, 'Foe-Q')

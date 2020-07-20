@@ -77,7 +77,6 @@ def q_learning(steps=1000000):
     return q_value_diff
 
 if __name__ == '__main__':
-    np.random.seed(1827343)
     if '--plot-only' in argv:
         list_of_error_diffs = pickle.load(open('bin/q-learner.p', 'rb'))
         plot_fig(np.array(list_of_error_diffs)[np.where(np.array(list_of_error_diffs) > 0)], 'Q-learner')
